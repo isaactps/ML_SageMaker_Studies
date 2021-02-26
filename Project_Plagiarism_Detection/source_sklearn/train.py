@@ -4,13 +4,10 @@ import argparse
 import os
 import pandas as pd
 
-# sklearn.externals.joblib is deprecated in 0.21 and will be removed in 0.23. 
-# from sklearn.externals import joblib
-# Import joblib package directly
-import joblib
+from sklearn.externals import joblib
 
 ## TODO: Import any additional libraries you need to define a model
-
+from sklearn import tree
 
 # Provided model load function
 def model_fn(model_dir):
@@ -42,7 +39,13 @@ if __name__ == '__main__':
     parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
     
     ## TODO: Add any additional arguments that you will need to pass into your model
+    # hyperparameters sent by the client are passed as command-line arguments to the script.
+    parser.add_argument('--max_leaf_nodes', type=int, default=-1)
     
+    parser.add_argument('--epochs', type=int, default=50)
+    parser.add_argument('--batch-size', type=int, default=64)
+    parser.add_argument('--learning-rate', type=float, default=0.05)
+
     # args holds all passed-in arguments
     args = parser.parse_args()
 
@@ -54,18 +57,18 @@ if __name__ == '__main__':
     train_y = train_data.iloc[:,0]
     train_x = train_data.iloc[:,1:]
     
+    max_leaf_nodes_input = args.max_leaf_nodes    
     
     ## --- Your code here --- ##
     
 
     ## TODO: Define a model 
-    model = None
-    
+    # Now use scikit-learn's decision tree classifier to train the model.
+    model = tree.DecisionTreeClassifier(max_leaf_nodes=max_leaf_nodes_input)
     
     ## TODO: Train the model
-    
-    
-    
+    model = model.fit(train_x, train_y)
+
     ## --- End of your code  --- ##
     
 
